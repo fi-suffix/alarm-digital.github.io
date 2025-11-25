@@ -39,6 +39,7 @@ var interval = setInterval(realTime, 1000); //buat jam realtime berjalan
 
 let AlarmTime = null; //setting default waktu alarm
 let AlarmActive = false; // ON/OFF dalam toggle alarm
+const nihAudio = new Audio('alarm.mp3')
 
 function setAlarm() {
 // buat user setting alarmnya
@@ -61,10 +62,9 @@ function checkAlarm() {
         const current = now.getHours().toString().padStart(2,"0") + ":" + now.getMinutes().toString().padStart(2, "0"); //ngecek waktu skrg dan ubah ke string biar sama kyk waktu yang di setting
 
         if (current === AlarmTime) { //klo waktu skrg sama kyk waktu yg diinput user maka lakukan 
-            const nihAudio = new Audio('alarm.mp3')
             nihAudio.play().loop //ini yang dilakukan klo udh sama
             AlarmActive = false; //klo udh jalan maka settingannya kembali menjadi default
-        }
+        } 
     }, 1000)
 }
 
@@ -105,7 +105,7 @@ function deleteAlarm() {
 
     reset.addEventListener("click", function() {
         alert("reset alarm berhasil");
-
+        nihAudio.pause(); //berhentiin audio klo alarm di reset
         input.value = "";
         AlarmTime = null;
         AlarmActive = false;

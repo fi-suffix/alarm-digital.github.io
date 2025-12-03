@@ -39,9 +39,8 @@ var interval = setInterval(realTime, 1000); //buat jam realtime berjalan
 
 let AlarmTime = null; //setting default waktu alarm
 let AlarmActive = false; // ON/OFF dalam toggle alarm
-const selectLagu = document.getElementById('sound-set');
-// single audio element used for alarm playback
-let alarmAudio = new Audio();
+const selectLagu = document.getElementById('sound-set').value;
+let alarmAudio = new Audio(selectLagu);
 
 function setAlarm() {
 // buat user setting alarmnya

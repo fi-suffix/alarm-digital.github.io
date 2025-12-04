@@ -154,3 +154,79 @@ function deleteAlarm() {
  toggleAlarm();
  checkAlarm();
  deleteAlarm();
+
+/* Custom dropdown: build a styled dropdown that mirrors the native select and keeps it in sync. */
+function initCustomDropdown() {
+    const select = document.getElementById('sound-set');
+    if (!select) return;
+
+    const wrapper = select.parentElement.querySelector('.custom-dropdown');
+    if (!wrapper) return;
+
+    const toggle = wrapper.querySelector('.dropdown-toggle');
+    const menu = wrapper.querySelector('.dropdown-menu');
+
+    // populate menu from select options
+    function buildMenu() {
+        menu.innerHTML = '';
+        for (let i = 0; i < select.options.length; i++) {
+            const opt = select.options[i];
+            const li = document.createElement('li');
+            li.setAttribute('data-value', opt.value);
+            li.setAttribute('role', 'option');
+            li.textContent = opt.text || opt.value;
+            if (opt.disabled) li.classList.add('disabled');
+            menu.appendChild(li);
+        }
+    }
+
+    buildMenu();
+
+    // set initial label
+    const selOpt = select.options[select.selectedIndex];
+    if (selOpt) toggle.textContent = selOpt.text || selOpt.value || 'Pilih suara';
+
+    // open/close
+    toggle.addEventListener('click', function (e) {
+        const expanded = this.getAttribute('aria-expanded') === 'true';
+        this.setAttribute('aria-expanded', String(!expanded));
+        menu.classList.toggle('show');
+    });
+
+    // option click
+    menu.addEventListener('click', function (e) {
+        const li = e.target.closest('li');
+        if (!li) return;
+        const value = li.getAttribute('data-value') || '';
+        // update native select and dispatch change
+        select.value = value;
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+        // update toggle label
+        toggle.textContent = li.textContent;
+        // mark active
+        menu.querySelectorAll('li').forEach(node => node.classList.remove('active'));
+        li.classList.add('active');
+        menu.classList.remove('show');
+        toggle.setAttribute('aria-expanded', 'false');
+    });
+
+    // close on outside click
+    document.addEventListener('click', function (e) {
+        if (!wrapper.contains(e.target)) {
+            menu.classList.remove('show');
+            toggle.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    // keep native select changes reflected in custom UI (when set programmatically)
+    select.addEventListener('change', function () {
+        const opt = select.options[select.selectedIndex];
+        if (opt) toggle.textContent = opt.text || opt.value || 'Pilih suara';
+        // highlight matching li
+        menu.querySelectorAll('li').forEach(li => {
+            li.classList.toggle('active', li.getAttribute('data-value') === select.value);
+        });
+    });
+}
+
+initCustomDropdown();
